@@ -7,17 +7,49 @@
 //
 
 import UIKit
+import CoreData
+import Foundation
 
 class TableViewController: UITableViewController {
 
+    let store = DataStore.sharedInstance
+    
+   // var messages = [Message]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        store.fetchData()
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        if store.messages.isEmpty {
+            store.generateTestData()
+        }
+        
+        self.tableView.reloadData()
         
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        store.fetchData()
+        self.tableView.reloadData()
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath)
+        let message = store.messages[indexPath.row]
+        cell.textLabel?.text = message.content
+        
+        return cell
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        
+       return  1
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+       return store.messages.count
+    }
+
 }
